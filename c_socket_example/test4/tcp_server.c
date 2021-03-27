@@ -4,8 +4,14 @@
 #include <arpa/inet.h> //htnol, htons, INADDR_ANY, sockaddr_in
 #include <stdlib.h> //exit
 #include <unistd.h> //sockaddr_in, read, write
+#include <pthread.h>
 
 void error_handling(char* message);
+void* send_msg(int);
+void* print_msg(int);
+
+pthread_t thread[2];
+
 
 int main(int argc, char* argv[]){
 	int server_socket;
@@ -31,17 +37,18 @@ int main(int argc, char* argv[]){
 	client_addr_size = sizeof(client_addr);
 	client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_addr_size);
 	if(client_socket==-1) error_handling("accept error");
-	
+
+	thread[0] = pthread_create(&thread[0], NULL, send_msg(client_socket), argv);
+	thread[1] = pthread_create(&thread[1], NULL, print_msg(server_socket), argv);
+
+	/*
 	char msg[] = "Hello this is server!\n";
 
 	while(strcmp(msg, "quit") != 0){
 		printf("enter the msg : ");
 		scanf("%s", msg);
 		write(client_socket, msg, sizeof(msg));
-		if(read(server_socket, msg, sizeof(msg)-1)==-1)
-			error_handling("read error");
-		print("Message from client : %s\n", msg);
-	}
+	}*/
 
 	close(client_socket);
 	close(server_socket);
@@ -50,8 +57,29 @@ int main(int argc, char* argv[]){
 	return 0;
 }
 
+
 void error_handling(char *message){
 	fputs(message, stderr);
 	fputc('\n', stderr);
 	exit(1);
+}
+
+void* send_msg(int socket){
+	char msg[50];
+	while(strcmp(msg, "quit") != 0){
+		printf("  to socket : ");
+		scanf("%s", msg);
+		write(socket, msg, sizeof(msg));
+	}
+
+}
+
+void* print_msg(int socket){
+	char msg[50];
+	while(strcmp(msg, "quit") != 0){
+		if(read(socket, msg, sizeof(msg)-1) == -1) error_handling("read error");
+		printf("from socket : %s\n", msg);
+	}
+
+
 }
