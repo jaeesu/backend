@@ -4,14 +4,11 @@
 #include <arpa/inet.h> //htnol, htons, INADDR_ANY, sockaddr_in
 #include <stdlib.h> //exit
 #include <unistd.h> //sockaddr_in, read, write
-#include <pthread.h>
+//#include <pthread.h>
 
 void error_handling(char* message);
 void* send_msg(int);
 void* print_msg(int);
-
-pthread_t thread[2];
-
 
 int main(int argc, char* argv[]){
 	int server_socket;
@@ -38,17 +35,19 @@ int main(int argc, char* argv[]){
 	client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_addr_size);
 	if(client_socket==-1) error_handling("accept error");
 
-	thread[0] = pthread_create(&thread[0], NULL, send_msg(client_socket), argv);
-	thread[1] = pthread_create(&thread[1], NULL, print_msg(server_socket), argv);
 
-	/*
 	char msg[] = "Hello this is server!\n";
+	write(client_socket, msg, sizeof(msg));
+	int t;
 
 	while(strcmp(msg, "quit") != 0){
+		while(read(client_socket, msg, sizeof(msg)-1)==-1){}
+		printf("from client : %s\n", msg);
 		printf("enter the msg : ");
 		scanf("%s", msg);
+		printf("\n");
 		write(client_socket, msg, sizeof(msg));
-	}*/
+	}
 
 	close(client_socket);
 	close(server_socket);

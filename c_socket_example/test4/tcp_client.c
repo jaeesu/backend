@@ -4,19 +4,15 @@
 #include <arpa/inet.h>
 #include <stdlib.h> //exit
 #include <unistd.h>
-#include <pthread.h>
+//#include <pthread.h>
 
 void error_handling(char* message);
 void* send_msg();
 void* print_msg();
 
-pthread_t thread[2];
-
-
 int main(int argc, char* argv[]){
 
 	int client_socket;
-	int server_socket;
 	struct sockaddr_in server_addr;
 	char message[1024] = {0x00, };
 
@@ -28,20 +24,17 @@ int main(int argc, char* argv[]){
 	server_addr.sin_addr.s_addr=inet_addr(argv[1]);
 	server_addr.sin_port=htons(atoi(argv[2]));
 	
-	server_socket =  connect(client_socket, (struct sockaddr*)&server_addr, sizeof(server_addr));
-	if(server_socket == -1)
+	if(connect(client_socket, (struct sockaddr*)&server_addr, sizeof(server_addr))==-1)
 		error_handling("connect error");
 
-	thread[0] = pthread_create(&thread[0], NULL, send_msg(server_socket), argv);
-	thread[1] = pthread_create(&thread[1], NULL, print_msg(client_socket), argv);
-
-	/*
 	while(strcmp(message, "quit") != 0){
-		if(read(client_socket, message, sizeof(message)-1)==-1)
-			error_handling("read error");
+		while(read(client_socket, message, sizeof(message)-1)==-1){}
 		printf("Message from server : %s\n", message);
-	}*/
-
+		printf("enter the msg : ");
+		scanf("%s", message);
+		printf("\n");
+		write(client_socket, message, sizeof(message));
+	}
 	close(client_socket);
 	
 	return 0;
