@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
 	pthread_t p_thread[2];
 	
 	build_thread(&p_thread[0], build_connection, (void*)argv[1]);
-	build_thread(&p_thread[1], build_connection, (void*)(argv[2]));
+	build_thread(&p_thread[1], build_connection, (void*)argv[2]);
 	//main_func();
 
 	pthread_join(p_thread[0], (void**)&status);
@@ -39,8 +39,7 @@ pthread_t build_thread(pthread_t* _addr, void* _func, void* _argv){
 
 void* build_connection(void* _argv){
 	printf("pid : %u, tid : %x \n", (unsigned int)getpid(), (unsigned int)pthread_self());
-	//여기까진 잘 왔다...스레드 생성 잘 됨... 소켓만 제발ㅠㅠㅠ
-	//각 스레드마다 서버 소켓, 클라이언트 소켓 맞겠지..?
+	
 	int server_socket;
 	int client_socket;
 
@@ -60,8 +59,6 @@ void* build_connection(void* _argv){
 		error_handling("bind error");
 	}
 
-	if(listen(server_socket, 5)==-1) error_handling("listen error");
-
 	client_addr_size = sizeof(client_addr);
 	client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_addr_size);
 	if(client_socket==-1) error_handling("accept error");
@@ -70,20 +67,17 @@ void* build_connection(void* _argv){
 
 	write(client_socket, msg, sizeof(msg));
 
+
 	close(client_socket);
 	close(server_socket);
 
-
-	return 0;	
-	
-
+	return 0;
 
 }
 
 void error_handling(char* _msg){
 	fputs(_msg, stderr);
 	fputc('\n', stderr);
-	//exit(1);
 	printf("exit : %u", (unsigned int)pthread_self());
 	pthread_exit(NULL);
 	//exit(1);
