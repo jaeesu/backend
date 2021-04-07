@@ -8,6 +8,9 @@
 #include <ctype.h>
 #include <time.h>
 
+struct CLIENT{
+	
+}client;
 
 pthread_t build_thread(pthread_t*, void*, void*);
 void* build_connection();
@@ -46,7 +49,8 @@ void* build_connection(void* _argv){
 	time_t ct;
 	struct tm tm;
 	ct=time(NULL);
-	tm=*localtime(&ct);
+	//tm=*localtime(&ct);
+	localtime_r(&ct, &tm);
 	
 	int server_socket;
 	int client_socket;
