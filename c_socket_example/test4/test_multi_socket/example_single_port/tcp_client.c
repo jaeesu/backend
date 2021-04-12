@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-//#include <pthread.h>
+#include <pthread.h>
 #include <time.h>
 #include <ctype.h>
 
@@ -12,7 +12,7 @@ const char* _PORT = "3345";
 int str_len(char*);
 
 void error_handling(char* message);
-//void* read_serv(void*);
+void* read_serv(void*);
 
 int main(int argc, char* argv[]){
 	printf("waiting-----------\n");
@@ -26,6 +26,12 @@ int main(int argc, char* argv[]){
 	struct tm tm;
 	ct = time(NULL);
 	tm = *localtime(&ct);
+
+	pthread_t p_thread;
+	int status;
+	pthread_t tid;
+	tid = pthread_create(&p_thread, NULL, read_serv, (void*)server_socket);
+
 
 	client_socket = socket(PF_INET, SOCK_STREAM, 0);
 	server_socket = socket(PF_INET, SOCK_STREAM, 0);
@@ -57,6 +63,7 @@ int main(int argc, char* argv[]){
 	}
 
 	close(client_socket);
+	pthread_join(p_thread, (void**)&status);
 
 	return 0;
 }
@@ -68,7 +75,7 @@ void error_handling(char* message){
 	exit(1);
 }
 
-/*
+
 void* read_serv(void* _server_socket){
 	printf("pid : %u, tid : %x \n", (unsigned int)getpid(), (unsigned int)pthread_self());
 
@@ -85,7 +92,7 @@ void* read_serv(void* _server_socket){
 		printf("[ %d : %d : %d ] [client : other]%s  \n", tm.tm_hour, tm.tm_min, tm.tm_sec, msg);
 	}
 }
-*/
+
 
 int str_len(char* _str){
 	int cnt;

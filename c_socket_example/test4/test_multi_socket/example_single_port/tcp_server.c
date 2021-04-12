@@ -102,6 +102,7 @@ void* build_connection(void* _argv){
 		write(client_socket, msg, sizeof(msg)-1);
 	}
 	//전송자말고 다른 클라이언트들에 브로드캐스트 해주는 코드 작성
+	//클라이언트 정보를 배열 같은 곳에 저장해둬야 한다.
 
 	printf("[ client : %s ....disconnected ]\n", name);
 
