@@ -12,16 +12,15 @@
 
 using namespace std;
 
-void error_handling(char*);
+void error_handling(string);
 
 class tcpserversocket{
 	private:
-		unsigned long int socket;
+		unsigned long int _socket;
 		struct sockaddr_in addr;
 
 	public:
 		void start(char*);
 
 };
-
 

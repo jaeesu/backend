@@ -11,15 +11,15 @@
 
 using namespace std;
 
-void error_handling(char*);
+void error_handling(string);
 
 class tcpclientsocket{
 	private :
-		unsigned long int socket;
+		unsigned long int _socket;
 		struct sockaddr_in server_addr;
 
 	public :
-		void start(char*, char*);
+		void start(char*);
 
 };
 
